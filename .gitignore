@@ -3,7 +3,13 @@ __pycache__/
 .venv/
 .idea/
 .vscode/
+.claude/
 
 # course materials (not part of the repo)
 Lecture slides/
 desc.txt
+
+# LaTeX build files
+report/*.aux
+report/*.log
+report/*.out
