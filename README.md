@@ -15,7 +15,6 @@ matplotlib is used only for the plot).
 - `xsudoku/generator.py` – backtracking generator for test instances with a unique solution
 - `instances/` – 11 test instances from 4x4 to 25x25 (`*.solution.txt` = known optimum)
 - `results/` – benchmark results (`results.csv`, `summary.md`, `convergence.png`)
-- `report/` – report (LaTeX source and PDF)
 
 ## Running
 

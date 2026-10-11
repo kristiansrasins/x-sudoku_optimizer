@@ -9,7 +9,5 @@ __pycache__/
 Lecture slides/
 desc.txt
 
-# LaTeX build files
-report/*.aux
-report/*.log
-report/*.out
+# report is submitted separately
+report/
