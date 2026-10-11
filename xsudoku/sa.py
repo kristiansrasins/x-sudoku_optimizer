@@ -40,8 +40,11 @@ def initial_temperature(state, rng, samples=200):
     return sd if sd > 0 else 1.0
 
 
-def simulated_annealing(puzzle, seed=None, alpha=0.99, l_factor=1.0, t_min=0.01,
-                        time_limit=60.0, max_iters=None, t0=None, history_every=0):
+def simulated_annealing(puzzle, seed=None, alpha=0.999, l_factor=1.0, t_min=0.01,
+                        time_limit=60.0, max_iters=None, t0=None, history_every=0,
+                        move="conflict"):
+    """move: "random"   - swap two random free cells of a random box
+             "conflict" - first cell is one that currently violates a constraint"""
     rng = random.Random(seed)
     start = time.perf_counter()
 
@@ -61,10 +64,11 @@ def simulated_annealing(puzzle, seed=None, alpha=0.99, l_factor=1.0, t_min=0.01,
     history = []
     exp = math.exp
     rnd = rng.random
+    generate = state.conflict_move if move == "conflict" else state.random_move
 
     while best_cost > 0:
         for _ in range(L):                          # for n := 0 to L[k]
-            a, b = state.random_move(rng)           # j := GENERATE(V(i))
+            a, b = generate(rng)                    # j := GENERATE(V(i))
             delta = state.swap(a, b)                # f(j) - f(i)
             iters += 1
             if delta <= 0 or rnd() < exp(-delta / t):

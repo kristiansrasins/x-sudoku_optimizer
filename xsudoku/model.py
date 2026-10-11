@@ -82,6 +82,7 @@ class State:
 
         # Free cells grouped by box (only boxes with >= 2 free cells can move).
         self.box_free = []
+        self.box_of_cell = {}
         for br in range(0, n, b):
             for bc in range(0, n, b):
                 cells = [(r, c) for r in range(br, br + b) for c in range(bc, bc + b)
@@ -94,6 +95,9 @@ class State:
                     self.grid[r][c] = v
                 if len(cells) >= 2:
                     self.box_free.append(cells)
+                    for cell in cells:
+                        self.box_of_cell[cell] = cells
+        self.movable = [cell for cells in self.box_free for cell in cells]
         self.free_count = sum(1 for row in puzzle.grid for v in row if v == 0)
 
         # Units checked by the cost: rows 0..n-1, cols n..2n-1, diag 2n, anti 2n+1.
@@ -151,6 +155,25 @@ class State:
         """Neighbourhood: pick a box with >= 2 free cells, pick two free cells in it."""
         cells = rng.choice(self.box_free)
         return rng.sample(cells, 2)
+
+    def in_conflict(self, r, c):
+        v = self.grid[r][c]
+        return any(self.counts[u * self.stride + v] > 1 for u in self.cell_units[r][c])
+
+    def conflict_move(self, rng, tries=20):
+        """Conflict-directed neighbourhood: the first cell is a movable cell that
+        currently violates a row/column/diagonal constraint (sampled, up to
+        `tries` attempts), the second is another free cell of the same box."""
+        free = self.movable
+        for _ in range(tries):
+            a = rng.choice(free)
+            if self.in_conflict(*a):
+                break
+        cells = self.box_of_cell[a]
+        b = a
+        while b == a:
+            b = rng.choice(cells)
+        return a, b
 
     def snapshot(self):
         return [row[:] for row in self.grid]
